@@ -1,9 +1,9 @@
 #pragma once
 #include <ncurses.h>
 
-class Board {
+class BoardView {
 public:
-  Board(int height, int width) : height(height), width(width) {
+  BoardView(int height, int width) : height(height), width(width) {
     int xMax, yMax;
     getmaxyx(stdscr, yMax, xMax);
 

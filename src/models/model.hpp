@@ -1,7 +1,6 @@
 #pragma once
 
-#include "helpers/snake.hpp"
-#include "helpers/apple.hpp"
+#include "helpers/snakeEntity.hpp"
 #include <vector>
 #include <assert.h>
 
@@ -9,18 +8,21 @@ class Model {
 public:
     Model(int height, int width)
         : snake({height/4, width/4}),
-          apple({height*3/4, height*3/4}),
-          boardState()
+          boardState(std::vector(height, std::vector(width, ' ')))
     {
         assert(height > 5 && width > 5);
     }
 
-    void sendChar(char c) {
-        snake.sendChar(c); 
+    void sendDirectionChar(char c) {
+        snake.sendDirectionChar(c); 
+    }
+
+    void updateBoard(){
+        snake.push_next();
+        snake.pop_back();
     }
 
 private: 
-    Snake snake;
-    Apple apple;
+    SnakeEntity snake;
     std::vector<std::vector<char>> boardState;
 };

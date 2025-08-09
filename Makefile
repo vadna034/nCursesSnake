@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -Wall -g -lncurses
 TARGET = main
-SOURCES = main.cpp src/views/board.hpp
+SOURCES = main.cpp 
 
 # Default target
 all: $(TARGET)

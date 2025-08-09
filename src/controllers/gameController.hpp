@@ -2,14 +2,14 @@
 
 #include "../models/model.hpp"
 
-class Game {
+class GameController {
 public: 
-    Game(Model& model) {
+    GameController(Model& model) {
         this->model = &model;
     }
 
     void inputChar(char c){
-        model -> sendChar(c);
+        model -> sendDirectionChar(c);
     }
 
 private: 

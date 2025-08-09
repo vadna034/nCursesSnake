@@ -1,14 +1,15 @@
 #pragma once
 
+#include "IEntity.hpp"
 #include <ncurses.h>
 #include <queue>
 #include <utility>
 
 enum Direction { LEFT = KEY_LEFT, RIGHT = KEY_RIGHT , UP = KEY_UP, DOWN = KEY_DOWN };
 
-class Snake {
+class SnakeEntity : IEntity {
 public:
-    Snake(std::pair<int,int> startPos){
+    SnakeEntity(std::pair<int,int> startPos){
         int i = startPos.first;
         int j = startPos.second;
 
@@ -28,7 +29,7 @@ public:
         positions.push(next); 
     }
 
-    void sendChar(char c){
+    void sendDirectionChar(char c){
         switch (c) {
             case LEFT: 
             case RIGHT:

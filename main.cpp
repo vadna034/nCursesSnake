@@ -1,4 +1,4 @@
-#include "src/views/board.hpp"
+#include "src/views/boardView.hpp"
 
 #include <ncurses.h>
 
@@ -10,7 +10,7 @@ int main() {
   initscr();
   refresh();
 
-  Board board(BOARD_ROWS, BOARD_COLS);
+  BoardView board(BOARD_ROWS, BOARD_COLS);
 
   getch();
   endwin();
