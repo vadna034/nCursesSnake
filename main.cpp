@@ -1,4 +1,4 @@
-#include "src/board.hpp"
+#include "src/views/board.hpp"
 
 #include <ncurses.h>
 
