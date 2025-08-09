@@ -12,6 +12,10 @@ public:
         model -> sendDirectionChar(c);
     }
 
+    void updateBoard(){
+        model -> updateBoard();
+    }
+
 private: 
     Model* model;
 };

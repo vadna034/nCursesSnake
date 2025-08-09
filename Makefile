@@ -1,20 +1,24 @@
-# Define variables
-CC = gcc
-CFLAGS = -Wall -g -lncurses
-TARGET = main
-SOURCES = main.cpp 
+# Use C++ compiler
+CXX := g++
+CPPFLAGS :=        
+CXXFLAGS := -MMD -MP -Wall -g
+LDLIBS := -lncurses
 
-# Default target
+TARGET := main
+SOURCES := $(wildcard *.cpp) $(wildcard */*.cpp)
+OBJS := $(SOURCES:.cpp=.o)
+DEPS := $(OBJS:.o=.d)
+
+.PHONY: all clean
 all: $(TARGET)
 
-# Rule to build the executable
-$(TARGET): $(SOURCES:.c=.o)
-	$(CC) $(CFLAGS) $^ -o $@
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(LDLIBS)
 
-# Rule to compile .c files into .o object files
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-# Clean rule to remove generated files
+-include $(DEPS)
+
 clean:
-	rm -f $(TARGET) $(SOURCES:.c=.o)
+	rm -f $(TARGET) $(OBJS) $(DEPS)

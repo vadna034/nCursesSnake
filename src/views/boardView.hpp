@@ -10,6 +10,7 @@ public:
     board_win =
         newwin(height, width, yMax / 2 - height / 2, xMax / 2 - width / 2);
     box(board_win, 0, 0);
+    mvwprintw(board_win, 5, 5, "A");
     wrefresh(board_win);
   }
 

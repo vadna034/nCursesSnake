@@ -24,5 +24,6 @@ public:
 
 private: 
     SnakeEntity snake;
+    std::vector<IEntity> entities;
     std::vector<std::vector<char>> boardState;
 };
