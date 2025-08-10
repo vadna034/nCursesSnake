@@ -27,15 +27,15 @@ public:
     addAt(drawable.getY(), drawable.getX(), drawable.getIcon());
   }
 
-private:
-  WINDOW *board_win;
-
-  void addBorder() const { box(board_win, 0, 0); }
-
   void clear() const {
     wclear(board_win);
     addBorder();
   }
+
+private:
+  WINDOW *board_win;
+
+  void addBorder() const { box(board_win, 0, 0); }
 
   void addAt(int i, int j, chtype c) const {
     mvwaddch(board_win, i + 1, j + 1, c);
