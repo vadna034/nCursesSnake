@@ -1,29 +1,38 @@
 #pragma once
 
-#include "helpers/snakeEntity.hpp"
-#include <vector>
 #include <assert.h>
+#include "../views/boardView.hpp"
+#include "entities/snake.hpp"
+#include "entities/apple.hpp"
 
 class Model {
 public:
-    Model(int height, int width)
-        : snake({height/4, width/4}),
-          boardState(std::vector(height, std::vector(width, ' ')))
+    Model(int height, int width) : board(height, width), game_over(false) {
+        board.initialize();
+    }
+
+    void processInput() const
     {
-        assert(height > 5 && width > 5);
+        chtype input = board.getInput();
     }
 
-    void sendDirectionChar(char c) {
-        snake.sendDirectionChar(c); 
+    void updateState() const
+    {
+        Snake s(5,5);
+        Apple a(4,4);
+        board.add(s);
+        board.add(a);
     }
 
-    void updateBoard(){
-        snake.push_next();
-        snake.pop_back();
+    void redraw() const {
+        board.refresh();
+    }
+
+    bool isGameOver() const {
+        return game_over;
     }
 
 private: 
-    SnakeEntity snake;
-    std::vector<IEntity> entities;
-    std::vector<std::vector<char>> boardState;
+    BoardView board;
+    bool game_over;
 };

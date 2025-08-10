@@ -1,20 +1,43 @@
 #pragma once
+#include <assert.h>
 #include <ncurses.h>
+
+#include "../models/entities/drawable.hpp"
 
 class BoardView {
 public:
-  BoardView(int height, int width) : height(height), width(width) {
+  BoardView(int height, int width) {
     int xMax, yMax;
     getmaxyx(stdscr, yMax, xMax);
 
     board_win =
         newwin(height, width, yMax / 2 - height / 2, xMax / 2 - width / 2);
-    box(board_win, 0, 0);
-    mvwprintw(board_win, 5, 5, "A");
-    wrefresh(board_win);
+  }
+
+  void initialize() const {
+    clear();
+    refresh();
+  }
+
+  chtype getInput() const { return wgetch(board_win); }
+
+  void refresh() const { wrefresh(board_win); }
+
+  void add(Drawable drawable) const {
+    addAt(drawable.getY(), drawable.getX(), drawable.getIcon());
   }
 
 private:
   WINDOW *board_win;
-  int height, width;
+
+  void addBorder() const { box(board_win, 0, 0); }
+
+  void clear() const {
+    wclear(board_win);
+    addBorder();
+  }
+
+  void addAt(int i, int j, chtype c) const {
+    mvwaddch(board_win, i + 1, j + 1, c);
+  }
 };
