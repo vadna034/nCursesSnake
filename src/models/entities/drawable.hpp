@@ -16,6 +16,10 @@ class Drawable {
         return icon;
     }
 
+    static bool areDrawablesCollided(const Drawable& v1, const Drawable& v2){
+        return v1.x == v2.x && v1.y == v2.y;
+    }
+
   protected: 
     Drawable(int y, int x, chtype ch){
         this->y = y;
