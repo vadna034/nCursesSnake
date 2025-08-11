@@ -2,6 +2,8 @@
 #include "src/views/boardView.hpp"
 
 #include <ncurses.h>
+#include <time.h>
+#include <stdlib.h>
 
 #define BOARD_DIM 4
 #define BOARD_ROWS (BOARD_DIM * 5 - 2)
@@ -12,6 +14,7 @@ int main() {
   refresh();
   noecho();
   keypad(stdscr, TRUE);
+  srand(time(NULL));
 
   Model game(BOARD_ROWS, BOARD_COLS);
 
