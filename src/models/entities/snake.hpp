@@ -31,6 +31,8 @@ public:
             case DOWN:
                 y++;
                 break;
+            default: 
+                throw("NOT IMPLEMENTED");
         }
     }
 
@@ -47,6 +49,8 @@ public:
                 break;
             case DOWN:
                 dir = DOWN;
+                break;
+            default: 
                 break;
         }
     }
