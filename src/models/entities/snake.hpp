@@ -1,6 +1,7 @@
 #pragma once
 
 #include "drawable.hpp"
+#include "../structs/boardDimensions.hpp"
 
 #include <ncurses.h>
 
@@ -17,19 +18,19 @@ public:
         dir = RIGHT;
     };
 
-    void move(){
+    void move(const BoardDimensions& boardDimensions){
         switch(dir){
             case LEFT:
-                x--;
+                updatePosition(-1, 0, boardDimensions);
                 break;
             case RIGHT:
-                x++;
+                updatePosition(1, 0, boardDimensions);
                 break;
             case UP:
-                y--;
+                updatePosition(0, -1, boardDimensions);
                 break;
             case DOWN:
-                y++;
+                updatePosition(0, 1, boardDimensions);
                 break;
             default: 
                 throw("NOT IMPLEMENTED");
@@ -57,4 +58,11 @@ public:
 
 protected:
     Direction dir;
+
+    void updatePosition(int xDiff, int yDiff, const BoardDimensions& boardDimensions){
+        const auto& [height, width] = boardDimensions;
+
+        x = (x + xDiff + width) % width;
+        y = (y + yDiff + height) % height;
+    }
 };
