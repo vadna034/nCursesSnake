@@ -19,8 +19,6 @@ public:
     refresh();
   }
 
-  chtype getInput() const { return wgetch(board_win); }
-
   void refresh() const { wrefresh(board_win); }
 
   void add(Drawable drawable) const {

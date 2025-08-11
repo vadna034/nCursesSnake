@@ -17,16 +17,17 @@ public:
         entities.assign({applePtr, snake});
     }
 
-    void processInput() const
-    {
-        chtype input = board.getInput();
+    void processInput() const {
+        chtype input = getch();
+        snake->processInput(input);
     }
 
-    void updateState() 
+    void updateState() const
     {
         snake->move();
 
         board.clear();
+
         for(auto e : entities){
             board.add(*e);
         }

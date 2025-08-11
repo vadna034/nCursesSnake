@@ -11,6 +11,7 @@ int main() {
   initscr();
   refresh();
   noecho();
+  keypad(stdscr, TRUE);
 
   Model game(BOARD_ROWS, BOARD_COLS);
 
