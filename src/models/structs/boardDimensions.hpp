@@ -5,3 +5,8 @@ struct BoardDimensions {
     int width;
 };
 
+struct Position {
+    int y;
+    int x;
+};
+

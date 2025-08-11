@@ -3,38 +3,64 @@
 #include "../views/boardView.hpp"
 #include "entities/apple.hpp"
 #include "entities/drawable.hpp"
-#include "entities/snake.hpp"
+#include "entities/snakeContainer.hpp"
 #include "structs/boardDimensions.hpp"
-#include <algorithm>
 #include <assert.h>
+#include <cstdlib>
+#include <iterator>
 #include <memory>
 #include <unordered_set>
-#include <vector>
-#include <random>
 
 class Model {
 public:
   Model(int height, int width)
-      : board(height, width), game_over(false),
-        boardDimensions({height - 2, width - 2}) {
+      : board(height, width), 
+        game_over(false),
+        snake(5, 5),
+        boardDimensions({height - 2, width - 2}){
     board.initialize();
 
-    snake = std::make_shared<Snake>(5, 5);
+    entities.insert(snake.peekFront());
     auto applePtr = std::make_shared<Apple>(10, 10);
-    entities.insert({applePtr, snake});
+    entities.insert({applePtr});
   }
 
-  void processInput() const {
+  void processInput() {
     chtype input = getch();
-    snake->processInput(input);
+    snake.processInput(input);
   }
 
   void updateState() {
-    snake->move(boardDimensions);
-    handleCollisions();
+    auto nextPos = snake.getNextPosition(boardDimensions);
+
+    std::shared_ptr<Drawable> collidedPiece = nullptr;
+
+    for (auto e : entities) {
+      if (e->getX() == nextPos.x && e->getY() == nextPos.y)
+        collidedPiece = e;
+    }
+
+    snake.push(nextPos.y, nextPos.x);
+    entities.insert(snake.peekBack());
+
+    if (collidedPiece == nullptr) {
+      entities.erase(snake.peekFront());
+      snake.pop();
+    } else if (collidedPiece->getIcon() == 'A') {
+      entities.erase(collidedPiece);
+
+      if (entities.size() == (uint)(boardDimensions.width * boardDimensions.height)) {
+        game_over = true;
+        game_won = true;
+      } else {
+        auto pos = getRandomOpenPosition();
+        entities.insert(std::make_shared<Apple>(pos.y, pos.x));
+      }
+    } else {
+      game_over = true;
+    }
 
     board.clear();
-
     for (auto e : entities) {
       board.add(*e);
     }
@@ -47,46 +73,23 @@ public:
 private:
   const BoardView board;
   bool game_over;
+  bool game_won;
 
   std::unordered_set<std::shared_ptr<Drawable>> entities;
-  std::shared_ptr<Snake> snake;
+  SnakeContainer snake;
   const BoardDimensions boardDimensions;
 
-  void handleCollisions() {
-    std::vector<std::shared_ptr<Drawable>> collidedVals;
-    std::copy_if(entities.begin(), entities.end(),
-                 std::back_inserter(collidedVals), [&](auto v) {
-                   return v != snake &&
-                          Drawable::areDrawablesCollided(*v, *snake);
-                 });
-
-    for (auto v : collidedVals) {
-      entities.erase(v);
-      auto [x, y] = getOpenPosition();
-      auto newApple = std::make_shared<Apple>(x, y);
-      entities.insert(newApple);
+  Position getRandomOpenPosition() {
+    std::unordered_set<int> openPositions;
+    for (int i = 0; i < boardDimensions.height * boardDimensions.width; i++) {
+      openPositions.insert(i);
     }
-  }
-
-  std::pair<int,int> getOpenPosition() {
-    const auto& [height, width] = boardDimensions;
-    int count = height * width; 
-    std::vector<bool> isPopulated(height * width, false);
-
     for (auto e : entities) {
-        int idx = e->getY() * boardDimensions.width + e->getX();
-        count += isPopulated[idx] == false;
-        isPopulated[idx] = true;
+      openPositions.erase(e->getX() + e->getY() * boardDimensions.width);
     }
+    auto it = openPositions.begin();
+    std::advance(it, (rand() % openPositions.size()));
 
-    int countFoundOpen = 0;
-    int idx = rand() % count;
-
-    for(int i=0; i<isPopulated.size(); i++){
-        countFoundOpen += !isPopulated[i];
-        if(countFoundOpen > idx) return {i / width, i % width};
-    }
-
-    return {-1,-1};
+    return {y:(*it) / boardDimensions.width,  x: (*it) % boardDimensions.width};
   }
 };
