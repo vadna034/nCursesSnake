@@ -12,6 +12,7 @@ public:
 
     board_win =
         newwin(height, width, yMax / 2 - height / 2, xMax / 2 - width / 2);
+    wtimeout(board_win, 100);
   }
 
   void initialize() const {

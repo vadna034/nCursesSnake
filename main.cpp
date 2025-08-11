@@ -15,6 +15,7 @@ int main() {
   noecho();
   keypad(stdscr, TRUE);
   srand(time(NULL));
+  curs_set(0);
 
   Model game(BOARD_ROWS, BOARD_COLS);
 
