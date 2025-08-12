@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../views/boardView.hpp"
+#include "entities/spike.hpp"
 #include "entities/apple.hpp"
 #include "entities/drawable.hpp"
 #include "entities/snakeContainer.hpp"
@@ -15,7 +16,7 @@
 
 class Model {
 public:
-  Model(int height, int width, int numApples)
+  Model(int height, int width, int numApples, int numSpikes)
       : board(height, width), 
         game_over(false),
         snake(5, 5),
@@ -24,6 +25,7 @@ public:
 
     entities.insert(snake.peekFront());
     for(int i=0; i<numApples; i++) addApple();
+    for(int i=0; i<numSpikes; i++) addSpike();
   }
 
   void processInput(chtype input) {
@@ -88,6 +90,11 @@ private:
   void addApple(){
     auto pos = getRandomOpenPosition();
     entities.insert(std::make_shared<Apple>(pos.y, pos.x));
+  }
+
+  void addSpike(){
+    auto pos = getRandomOpenPosition();
+    entities.insert(std::make_shared<Spike>(pos.y, pos.x));
   }
 
   const Position getRandomOpenPosition() const {

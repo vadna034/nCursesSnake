@@ -5,7 +5,7 @@
 
 class GameController {
 public:
-  GameController(int boardRows, int boardCols, int numApples = 10) : model(boardRows, boardCols, numApples) {}
+  GameController(int boardRows, int boardCols, int numApples = 10, int numSpikes = 5) : model(boardRows, boardCols, numApples, numSpikes) {}
 
   void ProcessInput() {
     while (!model.isGameOver()) {
