@@ -1,5 +1,4 @@
-#include "src/models/model.hpp"
-#include "src/views/boardView.hpp"
+#include "src/controllers/gameController.hpp"
 
 #include <ncurses.h>
 #include <time.h>
@@ -14,16 +13,16 @@ int main() {
   refresh();
   noecho();
   keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
   srand(time(NULL));
   curs_set(0);
 
-  Model game(BOARD_ROWS, BOARD_COLS);
+  GameController controller(BOARD_ROWS, BOARD_COLS);
 
-  while (!game.isGameOver()) {
-    game.processInput();
-    game.updateState();
-    game.redraw();
-  }
+  std::thread inputThread(&GameController::ProcessInput, &controller);
+  std::thread updateThread(&GameController::UpdateBoard, &controller);
+  inputThread.join();
+  updateThread.join();
 
   getch();
   endwin();

@@ -5,15 +5,17 @@
 #include "entities/drawable.hpp"
 #include "entities/snakeContainer.hpp"
 #include "structs/boardDimensions.hpp"
+#include <algorithm>
 #include <assert.h>
 #include <cstdlib>
 #include <iterator>
 #include <memory>
+#include <mutex>
 #include <unordered_set>
 
 class Model {
 public:
-  Model(int height, int width)
+  Model(int height, int width, int numApples)
       : board(height, width), 
         game_over(false),
         snake(5, 5),
@@ -21,12 +23,10 @@ public:
     board.initialize();
 
     entities.insert(snake.peekFront());
-    auto applePtr = std::make_shared<Apple>(10, 10);
-    entities.insert({applePtr});
+    for(int i=0; i<numApples; i++) addApple();
   }
 
-  void processInput() {
-    chtype input = getch();
+  void processInput(chtype input) {
     snake.processInput(input);
   }
 
@@ -49,12 +49,13 @@ public:
     } else if (collidedPiece->getIcon() == 'A') {
       entities.erase(collidedPiece);
 
-      if (entities.size() == (uint)(boardDimensions.width * boardDimensions.height)) {
+      if (entities.size() == (uint)(boardDimensions.width * boardDimensions.height) &&
+          std::find_if(entities.begin(), entities.end(), [](auto e){return e->getIcon() == 'A';}) == entities.end()
+        ) {
         game_over = true;
         game_won = true;
       } else {
-        auto pos = getRandomOpenPosition();
-        entities.insert(std::make_shared<Apple>(pos.y, pos.x));
+        addApple();
       }
     } else {
       game_over = true;
@@ -70,16 +71,26 @@ public:
 
   bool isGameOver() const { return game_over; }
 
+  void lock() { boardLock.lock(); }
+
+  void unlock() {boardLock.unlock(); };
+
 private:
   const BoardView board;
   bool game_over;
   bool game_won;
+  std::mutex boardLock;
 
   std::unordered_set<std::shared_ptr<Drawable>> entities;
   SnakeContainer snake;
   const BoardDimensions boardDimensions;
 
-  Position getRandomOpenPosition() {
+  void addApple(){
+    auto pos = getRandomOpenPosition();
+    entities.insert(std::make_shared<Apple>(pos.y, pos.x));
+  }
+
+  const Position getRandomOpenPosition() const {
     std::unordered_set<int> openPositions;
     for (int i = 0; i < boardDimensions.height * boardDimensions.width; i++) {
       openPositions.insert(i);
@@ -87,6 +98,9 @@ private:
     for (auto e : entities) {
       openPositions.erase(e->getX() + e->getY() * boardDimensions.width);
     }
+    
+    if(openPositions.size() == 0) {return {y:-1, x:-1};}
+
     auto it = openPositions.begin();
     std::advance(it, (rand() % openPositions.size()));
 
