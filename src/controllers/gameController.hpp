@@ -13,6 +13,7 @@ public:
       model.lock();
       model.processInput(ch);
       model.unlock();
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
   }
 
@@ -22,7 +23,7 @@ public:
       model.updateState();
       model.redraw();
       model.unlock();
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
   }
 
