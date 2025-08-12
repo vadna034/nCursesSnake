@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../views/boardView.hpp"
+#include "../views/scoreBoardView.hpp"
 #include "entities/spike.hpp"
 #include "entities/apple.hpp"
 #include "entities/drawable.hpp"
@@ -18,10 +19,15 @@ class Model {
 public:
   Model(int height, int width, int numApples, int numSpikes)
       : board(height, width), 
-        game_over(false),
+        scoreBoard(height, width),
         snake(5, 5),
         boardDimensions({height - 2, width - 2}){
+    game_won = false;
+    game_over = false;
+    score = 0;
+
     board.initialize();
+    scoreBoard.initialize(score);
 
     entities.insert(snake.peekFront());
     for(int i=0; i<numApples; i++) addApple();
@@ -50,6 +56,8 @@ public:
       snake.pop();
     } else if (collidedPiece->getIcon() == 'A') {
       entities.erase(collidedPiece);
+      incrementScore();
+      scoreBoard.updateScore(score);
 
       if (entities.size() == (uint)(boardDimensions.width * boardDimensions.height) &&
           std::find_if(entities.begin(), entities.end(), [](auto e){return e->getIcon() == 'A';}) == entities.end()
@@ -69,7 +77,10 @@ public:
     }
   }
 
-  void redraw() const { board.refresh(); }
+  void redraw() const { 
+        board.refresh(); 
+        scoreBoard.refresh(); 
+  }
 
   bool isGameOver() const { return game_over; }
 
@@ -79,13 +90,15 @@ public:
 
 private:
   const BoardView board;
+  const ScoreBoardView scoreBoard;
   bool game_over;
   bool game_won;
-  std::mutex boardLock;
+  int score;
 
   std::unordered_set<std::shared_ptr<Drawable>> entities;
   SnakeContainer snake;
   const BoardDimensions boardDimensions;
+  std::mutex boardLock;
 
   void addApple(){
     auto pos = getRandomOpenPosition();
@@ -113,4 +126,6 @@ private:
 
     return {y:(*it) / boardDimensions.width,  x: (*it) % boardDimensions.width};
   }
+
+  void incrementScore() { score += 100; }
 };
