@@ -1,6 +1,7 @@
 #pragma once
 #include <assert.h>
 #include <ncurses.h>
+#include <string>
 
 #include "../models/entities/drawable.hpp"
 
@@ -29,6 +30,16 @@ public:
   void clear() const {
     wclear(board_win);
     addBorder();
+  }
+
+  void addGameOverScreen(int score) const {
+    int xMax, yMax;
+    getmaxyx(board_win, yMax, xMax);
+
+    wclear(board_win);
+    addBorder();
+    std::string gameOverMessage = "Game over: final score " + std::to_string(score);
+    mvwprintw(board_win, yMax/2, xMax/2 - (gameOverMessage.length() / 2), "%s", gameOverMessage.c_str());
   }
 
 private:
